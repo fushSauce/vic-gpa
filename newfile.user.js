@@ -1,32 +1,35 @@
 // ==UserScript==
 // @name        Vic GPA
 // @namespace   Violentmonkey Scripts
-// @include *
+// @match *://student-records.vuw.ac.nz/*.P_FacStuInfo
 // @version     1.0
 // @author      qut3
 // @grant       unsafeWindow
 // @description 28/11/2022, 16:08:13
 // ==/UserScript==
 
-// @match *://student-records.vuw.ac.nz/*.P_FacStuInfo
 
 /** Get data from DOM */
 const termTables = [
     ...document.querySelectorAll('table[summary*="degree history"]'),
   ].slice(1);
+
+// can't find dom elements
+if (termTables[0] === undefined) process.exit(1);
+
   
   const terms = termTables.map(
     (table) => table.querySelector('td.dddefault').textContent,
   );
   
-  unsafeWindow.courseData = termTables.reduce((courses, table) => {
+   let courseData = termTables.reduce((courses, table) => {
     const term = table.querySelector('td.dddefault').textContent;
     const gradeTable = table.nextElementSibling;
   
     const headers = [...gradeTable.querySelectorAll('th.ddheader')].map(
       (th) => th.textContent,
     );
-  
+
     const tableRows = [...gradeTable.querySelectorAll('tr:not(:first-of-type)')].map(
       (row) => {
         const cells = [...row.querySelectorAll('td')];
@@ -43,7 +46,9 @@ const termTables = [
   
     return courses.concat(...tableRows);
   }, []);
-  
+
+  unsafeWindow.courseData = courseData;
+
   /** Perform calculations */
   const gpas = terms.reduce((gpas, term) => {
     const courses = courseData.filter(({ Term }) => Term === term);
@@ -84,7 +89,7 @@ const termTables = [
   
   /** Insert new Table */
   const qualificationStatusTable = document.querySelector(
-    'table[summary*="qualification status"]',
+    'table[summary*="qualification status"]'
   );
   
   const gpaTableRows = terms
@@ -131,4 +136,5 @@ const termTables = [
       Math.round(gpa)
     ];
   }
-  
+
+
