@@ -1,0 +1,68 @@
+[
+  {
+    "<br>course": "INFO151",
+    "<br>title": "Databases",
+    "<br>ptrm": "<p class=\"centeraligntext\">1</p>",
+    "pts/crs<br>value": "<p class=\"centeraligntext\">15</p>",
+    "<pclass=\"centeraligntext\"><br>efts</p>": "<p class=\"centeraligntext\">  0.125</p>",
+    "<br>registration": "Registered",
+    "<br>grade": "B+",
+    "grade<br>pts": "<p class=\"centeraligntext\">6</p>",
+    "pts/crs<br>gained": "<p class=\"centeraligntext\">15</p>"
+  },
+  {
+    "<br>course": "MATH161",
+    "<br>title": "Discrete Mathematics and Logic",
+    "<br>ptrm": "<p class=\"centeraligntext\">2</p>",
+    "pts/crs<br>value": "<p class=\"centeraligntext\">15</p>",
+    "<pclass=\"centeraligntext\"><br>efts</p>": "<p class=\"centeraligntext\">  0.125</p>",
+    "<br>registration": "Registered",
+    "<br>grade": "B",
+    "grade<br>pts": "<p class=\"centeraligntext\">5</p>",
+    "pts/crs<br>gained": "<p class=\"centeraligntext\">15</p>"
+  },
+  {
+    "<br>course": "NWEN241",
+    "<br>title": "Systems Programming",
+    "<br>ptrm": "<p class=\"centeraligntext\">1</p>",
+    "pts/crs<br>value": "<p class=\"centeraligntext\">15</p>",
+    "<pclass=\"centeraligntext\"><br>efts</p>": "<p class=\"centeraligntext\">  0.125</p>",
+    "<br>registration": "Registered",
+    "<br>grade": "B+",
+    "grade<br>pts": "<p class=\"centeraligntext\">6</p>",
+    "pts/crs<br>gained": "<p class=\"centeraligntext\">15</p>"
+  },
+  {
+    "<br>course": "NWEN243",
+    "<br>title": "Clouds and Networking",
+    "<br>ptrm": "<p class=\"centeraligntext\">2</p>",
+    "pts/crs<br>value": "<p class=\"centeraligntext\">15</p>",
+    "<pclass=\"centeraligntext\"><br>efts</p>": "<p class=\"centeraligntext\">  0.125</p>",
+    "<br>registration": "Registered",
+    "<br>grade": "B-",
+    "grade<br>pts": "<p class=\"centeraligntext\">4</p>",
+    "pts/crs<br>gained": "<p class=\"centeraligntext\">15</p>"
+  },
+  {
+    "<br>course": "SWEN221",
+    "<br>title": "Software Development",
+    "<br>ptrm": "<p class=\"centeraligntext\">1</p>",
+    "pts/crs<br>value": "<p class=\"centeraligntext\">15</p>",
+    "<pclass=\"centeraligntext\"><br>efts</p>": "<p class=\"centeraligntext\">  0.125</p>",
+    "<br>registration": "Registered",
+    "<br>grade": "A-",
+    "grade<br>pts": "<p class=\"centeraligntext\">7</p>",
+    "pts/crs<br>gained": "<p class=\"centeraligntext\">15</p>"
+  },
+  {
+    "<br>course": "SWEN225",
+    "<br>title": "Software Design",
+    "<br>ptrm": "<p class=\"centeraligntext\">2</p>",
+    "pts/crs<br>value": "<p class=\"centeraligntext\">15</p>",
+    "<pclass=\"centeraligntext\"><br>efts</p>": "<p class=\"centeraligntext\">  0.125</p>",
+    "<br>registration": "Registered",
+    "<br>grade": "A-",
+    "grade<br>pts": "<p class=\"centeraligntext\">7</p>",
+    "pts/crs<br>gained": "<p class=\"centeraligntext\">15</p>"
+  }
+]
