@@ -1,0 +1,23 @@
+{
+  "name": "vic-gpa",
+  "version": "1.0.0",
+  "description": "Victoria University GPA calculator",
+  "main": "newfile.user.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fushSauce/vic-gpa.git"
+  },
+  "keywords": [
+    "greasemonkey",
+    "violentmonkey"
+  ],
+  "author": "Mick Snadden",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/fushSauce/vic-gpa/issues"
+  },
+  "homepage": "https://github.com/fushSauce/vic-gpa#readme"
+}
