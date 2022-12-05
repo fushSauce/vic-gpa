@@ -2,7 +2,7 @@
   "name": "vic-gpa",
   "version": "1.0.0",
   "description": "Victoria University GPA calculator",
-  "main": "newfile.user.js",
+  "main": "vic-gpa.user.js",
   "scripts": {
     "test": "jest"
   },
@@ -19,5 +19,8 @@
   "bugs": {
     "url": "https://github.com/fushSauce/vic-gpa/issues"
   },
-  "homepage": "https://github.com/fushSauce/vic-gpa#readme"
+  "homepage": "https://github.com/fushSauce/vic-gpa#readme",
+  "devDependencies": {
+    "jest": "^29.3.1"
+  }
 }
