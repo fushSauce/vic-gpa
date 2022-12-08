@@ -3,138 +3,157 @@
 // @namespace   Violentmonkey Scripts
 // @match *://student-records.vuw.ac.nz/*.P_FacStuInfo
 // @version     1.0
-// @author      qut3
+// @author      geoCos
 // @grant       unsafeWindow
 // @description 28/11/2022, 16:08:13
+// @license MIT
 // ==/UserScript==
 
+/**
+ * Getting Data
+ * ----------------------
+ */
 
-/** Get data from DOM */
-const termTables = [
-    ...document.querySelectorAll('table[summary*="degree history"]'),
-  ].slice(1);
+const termTables = [...document.querySelectorAll('table[summary*="degree history"]')].slice(1);
 
-// can't find dom elements
-if (termTables[0] === undefined) process.exit(1);
+const terms = termTables.reduce((accumulator, currentValue) => {
+    const number = parseInt(currentValue.querySelector('b').textContent);
+    accumulator.push(number);
+    return accumulator;
+}, [])
 
-  
-  const terms = termTables.map(
-    (table) => table.querySelector('td.dddefault').textContent,
-  );
-  
-   let courseData = termTables.reduce((courses, table) => {
-    const term = table.querySelector('td.dddefault').textContent;
-    const gradeTable = table.nextElementSibling;
-  
-    const headers = [...gradeTable.querySelectorAll('th.ddheader')].map(
-      (th) => th.textContent,
-    );
+const courseTables = termTables.reduce((accumulator, currentValue, currentIndex) => {
+    accumulator.push(currentValue.nextElementSibling);
+    return accumulator;
+}, [])
 
-    const tableRows = [...gradeTable.querySelectorAll('tr:not(:first-of-type)')].map(
-      (row) => {
-        const cells = [...row.querySelectorAll('td')];
-  
-        return cells.reduce(
-          (course, dataCell, index) => {
-            course[headers[index]] = dataCell.textContent.trim();
-            return course;
-          },
-          { Term: term },
-        );
-      },
-    );
-  
-    return courses.concat(...tableRows);
-  }, []);
+const courseData = getCourseData();
 
-  unsafeWindow.courseData = courseData;
+let gradeArr = ['D','C-','C','C+','B-','B','B+','A-','A','A+'];
 
-  /** Perform calculations */
-  const gpas = terms.reduce((gpas, term) => {
-    const courses = courseData.filter(({ Term }) => Term === term);
-    
-    const gradePoints = courses
-      .map(({ GradePts }) => parseInt(GradePts))
-      .filter((grade) => !isNaN(grade) && grade !== 0);
-  
-    const sum = gradePoints.reduce((a, b) => a + b, 0);
-  
-    if (gradePoints.length) {
-      gpas[term] = sum / gradePoints.length;
-    }
-  
-    (accumulator, term) => {
-      const courses = courseData.filter(({ Term }) => Term === term);
-  
-      const gradePoints = courses
-        .map(({ GradePts }) => parseInt(GradePts))
-        .filter((x) => !isNaN(x) && x !== 0);
-  
-      const sum = gradePoints.reduce((a, b) => a + b, 0);
-    
-      if (gradePoints.length) {
-        accumulator[term] = sum / gradePoints.length;
-      }
-    
-      return accumulator;
-    }
-    return gpas;
-  }, {});
-  
-  const sum = Object.values(gpas).reduce((a, b) => a + b, 0);
-  const countedTerms = Object.entries(gpas).length;
-  const overallGpa = sum / countedTerms;
-  const roundedOverallGpa = getRoundedGpa(overallGpa);
-  const overallLetterGrade = getLetterGrade(overallGpa);
-  
-  /** Insert new Table */
-  const qualificationStatusTable = document.querySelector(
-    'table[summary*="qualification status"]'
-  );
-  
-  const gpaTableRows = terms
-    .map((term) => {
-      const gpa = getRoundedGpa(gpas[term]);
-      const letterGrade = getLetterGrade(gpas[term]);
-  
-      return `
-      <tr>
-        <td  class="dddefault">${term}</td>
-        <td  class="dddefault">${isNaN(gpa) ? 'N/A' : gpa}</td>
-        <td  class="dddefault">${letterGrade ?? 'N/A'}</td>
-      </tr>
-    `;
+const gpaTermMap = terms.reduce((acc, curTerm, curIndex) => {
+    acc.set(curTerm, getGpa(curTerm));
+    return acc;
+}, new Map());
+
+const gpaArr = [...gpaTermMap.values()]
+    .filter(e => e !== 0);
+
+const overallGpa = (gpaArr.reduce((a, b) => a + b, 0)) / gpaArr.length;
+
+const gpaInfoString = getGpaInfoString();
+
+unsafeWindow.gpaInfo = gpaInfoString;
+
+
+/**
+ * Presenting
+ * ----------------------
+ */
+
+/**
+ * Utilities
+ * ----------------------
+ */
+
+/**
+ * Get all course data tables, create rows as json objects, add term as key in the json objects.
+ * @returns {*}
+ */
+function getCourseData() {
+    const reduce = termTables.reduce((termTableAccumulator, currentTermTable) => {
+
+        const termNumber = parseInt(currentTermTable.querySelector('b').textContent);
+        const courseTable = currentTermTable.nextElementSibling;
+        const rows = [...courseTable.rows];
+        const headerStrings = [...rows[0].cells].map(e => e.textContent);
+        const dataRows = rows.slice(1);
+
+        const dataRowReduction = dataRows.reduce((dataRowAccumulator, currentRow) => {
+            const cells = [...currentRow.cells];
+
+            const cellReduction = cells.reduce((cellAccumulator, currentCell, currentIndex) => {
+                cellAccumulator[headerStrings[currentIndex]] = currentCell.textContent;
+                cellAccumulator.Term = String(termNumber);
+                return cellAccumulator;
+            }, {});
+            dataRowAccumulator.push(cellReduction);
+            return dataRowAccumulator;
+        }, []);
+
+        termTableAccumulator.push([...dataRowReduction]);
+        return termTableAccumulator;
+    }, []);
+
+    const combinedRows = reduce.reduce((accumulator, currentValue) => {
+        currentValue.forEach(e => {
+            accumulator.push(e);
+        })
+        return accumulator
+    }, []);
+
+    return combinedRows;
+}
+
+/**
+ * Utilities
+ * @param a
+ * @param b
+ * @returns {*}
+ */
+function sum(a, b) {
+    return a + b;
+}
+
+/**
+ * Used to get columns with numerical data and put in array
+ * @param arr
+ * @param header
+ * @returns {*}
+ */
+function getColNumbers(arr, header) {
+    return arr.reduce((acc, currentVal) => {
+        acc.push(Number(currentVal[header]));
+        return acc;
+    }, []);
+}
+
+/**
+ * Gets gpa for given term
+ * @param termNumber
+ * @returns {number}
+ */
+function getGpa(termNumber) {
+    const termCourses = courseData.filter(e => e.Term === String(termNumber));
+
+    const creditsArr = getColNumbers(termCourses, "Pts/CrsValue");
+    const creditsArrSum = creditsArr.reduce((a, b) => a + b, 0);
+
+    const gradesArr = getColNumbers(termCourses, "GradePts");
+
+    const gradeXCreditSum = gradesArr.reduce((acc, curV, curI) => {
+        acc += (curV * creditsArr[curI]);
+        return acc;
+    }, 0);
+
+    return (gradeXCreditSum / creditsArrSum);
+}
+
+
+function getGpaInfoString() {
+    const filter = [...gpaTermMap.entries()].filter(e => e[1] !== 0);
+    const gpaSum = filter.reduce((a,b)=>a+b[1],0);
+    const overallGpa = (gpaSum/filter.length);
+    let data = `Overall: ${overallGpa.toFixed(2)} CLG: ${gradeArr[Math.round(overallGpa)]}\n`;
+
+    filter.forEach(e=>{
+        const term = e[0];
+        const grade = e[1];
+        const clg = gradeArr[Math.round(grade)];
+        data += `term: ${term} grade: ${grade.toFixed(2)} CLG: ${clg}\n`;
     })
-    .join('');
-  
-  const gpaTableHTML = `
-      <br>
-      <hr>
-      <table class='datadisplaytable' id='gpa_table' summary="This table displays the student gpa status information." style="width: 100%">
-        <caption class="captiontext"><a name="gen_acad_det">GPA Status Overall: ${roundedOverallGpa}, ${overallLetterGrade}</a> &nbsp;&nbsp;&nbsp;<a href="#top" alt="TOP">-Top-</a></caption>
-        <tbody>
-        <tr>
-          <th colspan=1 class=ddheader scope=col>Term</th>
-          <th colspan=1 class=ddheader scope=col>GPA</th>
-          <th colspan=1 class=ddheader scope=col>Closest Letter Grade</th>
-        </tr>
-        ${gpaTableRows}
-      </tbody></table>
-  `;
-  
-  qualificationStatusTable.insertAdjacentHTML('afterend', gpaTableHTML);
-  
-  /**
-   * Utilities
-   */
-  function getRoundedGpa(gpa) {
-    return Math.round((gpa + Number.EPSILON) * 100) / 100;
-  }
-  
-  function getLetterGrade(gpa) {
-    return ['D', 'C-', 'C', 'C+', 'B-', 'B', 'B+', 'A-', 'A', 'A+'][
-      Math.round(gpa)
-    ];
-  }
+    return data;
+}
+
 
 
