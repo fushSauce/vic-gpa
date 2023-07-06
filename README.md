@@ -1,4 +1,7 @@
-# Vic Gpa
+# Vic Gpa (WIP)
+## TODO
+- [ ] Cumulative GPA with Unfinished Term
+- [ ] Unfinished Term
 
 ![img](./vicGPA.png)
 
